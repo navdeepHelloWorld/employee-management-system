@@ -16,14 +16,14 @@ const Login = () => {
 
     return (
         <div className='flex h-screen w-screen items-center justify-center'>
-            <div className='border-2  border-red-600  rounded p-4'>
-                <form onSubmit={(e)=>submitHandler(e)} className='flex flex-col items-center justify-center p-4 '>
+            <div className='border-2  border-emerald-600  rounded p-4 w-80 bg-black shadow-lg'>
+                <form onSubmit={(e)=>submitHandler(e)} className='flex flex-col items-center justify-center p-4'>
                     
                     <input
                     required
                     type="text"
                      placeholder='Enter your email'
-                    className='border-2 border-gray-400 rounded-full p-2 w-full mb-4'
+                    className='placeholder-gray-500 border-2  border-emerald-400 rounded-full p-2 w-full mb-4'
                     value={email}
                     onChange={(e)=>{
                         setEmail(e.target.value)
@@ -33,7 +33,7 @@ const Login = () => {
                      required 
                          type="password" 
                          placeholder='Enter your password'
-                         className='border-2 border-gray-400 rounded-full p-2 w-full mb-4'
+                         className=' placeholder-gray-500 border-2 border-emerald-400 rounded-full p-2 w-full mb-4'
                          value={password}
                          onChange={(e)=>{
                             setPassword(e.target.value)
@@ -41,7 +41,7 @@ const Login = () => {
                          /> 
                     <button 
                     type='submit'
-                    className='bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600  '>
+                    className='bg-emerald-500 text-white px-7 p-2 rounded-full hover:bg-emerald-600  '>
                         Log In
                     </button>
 
