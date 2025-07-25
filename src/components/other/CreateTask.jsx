@@ -1,9 +1,10 @@
-import React from "react";
+
+import {React ,} from "react";
 
 const CreateTask = ()=>{
 
      const [taskTitle, setTaskTitle] = useState("");
-    const [taskDescription, settaskDescription] = useState(second)
+    const [taskDescription, setTaskDescription] = useState("")
    
    const submitHandler =(e)=>{
         e.preventDefault()
