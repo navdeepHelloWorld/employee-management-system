@@ -1,15 +1,18 @@
 import React from 'react';
 
-const Login = () => {
-   
+const Login = ({handleLogin}) => {
+     
+    
+
     const [email, setEmail]=React.useState("");
     const [password, setPassword]= React.useState("");
    
    const submitHandler =(e)=>{
         e.preventDefault();
-        email && password ? console.log("Form submitted with email:", email, "and password:", password) : alert("Please fill in all fields");
-      setEmail("");
-      setPassword("")
+        
+        handleLogin(email,password)
+        setEmail("");
+        setPassword("")
    }
    
 
@@ -22,7 +25,7 @@ const Login = () => {
                     <input
                     required
                     type="text"
-                     placeholder='Enter your email'
+                    placeholder='Enter your email'
                     className='placeholder-gray-500 border-2  border-emerald-400 rounded-full p-2 w-full mb-4'
                     value={email}
                     onChange={(e)=>{
