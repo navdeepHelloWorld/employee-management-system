@@ -30,6 +30,7 @@ const CreateTask = () => {
         // Validation
         if (!taskTitle.trim() || !taskDescription.trim() || !taskDate || !assignTo.trim() || !category.trim()) {
             setMessage({ text: "Please fill in all fields", type: "error" });
+            setTimeout(() => setMessage({ text: "", type: "" }), 3000);
             return;
         }
         
@@ -150,9 +151,11 @@ const CreateTask = () => {
                             className="w-full text-sm py-2 px-3 outline-none bg-transparent text-white border border-gray-400 rounded focus:border-emerald-400 transition-colors"
                             disabled={isSubmitting}
                         >
-                            <option value="">Select Employee</option>
+                            <option 
+                            className="bg-gray-800"
+                             value="">Select Employee</option>
                             {authData.employees.map((emp) => (
-                                <option key={emp.id} value={emp.firstName}>
+                                <option className="bg-gray-800" key={emp.id} value={emp.firstName}>
                                     {emp.firstName}
                                 </option>
                             ))}
@@ -167,15 +170,15 @@ const CreateTask = () => {
                             className="w-full text-sm py-2 px-3 outline-none bg-transparent text-white border border-gray-400 rounded focus:border-emerald-400 transition-colors"
                             disabled={isSubmitting}
                         >
-                            <option value="">Select Category</option>
-                            <option value="Design">Design</option>
-                            <option value="Development">Development</option>
-                            <option value="Testing">Testing</option>
-                            <option value="Documentation">Documentation</option>
-                            <option value="Bug Fix">Bug Fix</option>
-                            <option value="Feature">Feature</option>
-                            <option value="Meeting">Meeting</option>
-                            <option value="Other">Other</option>
+                            <option  className="bg-gray-800" value="">Select Category</option>
+                            <option  className="bg-gray-800" value="Design">Design</option>
+                            <option  className="bg-gray-800" value="Development">Development</option>
+                            <option className="bg-gray-800"  value="Testing">Testing</option>
+                            <option  className="bg-gray-800" value="Documentation">Documentation</option>
+                            <option  className="bg-gray-800" value="Bug Fix">Bug Fix</option>
+                            <option  className="bg-gray-800" value="Feature">Feature</option>
+                            <option className="bg-gray-800"  value="Meeting">Meeting</option>
+                            <option  className="bg-gray-800" value="Other">Other</option>
                         </select>
                     </div>
                 </div>
