@@ -6,7 +6,7 @@ const Header = (props) => {
     }
    
     return (
-        <div className="flex item-end justify-between text-white">
+        <div className="flex items-end justify-between text-white">
             <h1 className="text-2xl">
                 Hello <br/>
                 <span className="text-3xl font-semibold">{props.data.firstName} 🫡</span>
