@@ -100,7 +100,7 @@ const employees = [
   {
     id: 3,
     firstName: "Rohan",
-    email: "employee3@example.com",
+    email: "e3@e.com",
     password: "123",
     taskStats: {
       active: 2,
@@ -273,8 +273,43 @@ const admin = [
 ]
  
 export const setLocalStorage = () => {
-  localStorage.setItem('employees', JSON.stringify(employees))
-  localStorage.setItem('admin', JSON.stringify(admin))
+  const rawEmployees = localStorage.getItem('employees')
+  const rawAdmin = localStorage.getItem('admin')
+
+  let shouldSeedEmployees = false
+  let shouldSeedAdmin = false
+
+  try {
+    const parsedEmployees = rawEmployees ? JSON.parse(rawEmployees) : null
+    if (!Array.isArray(parsedEmployees) || parsedEmployees.length === 0) {
+      shouldSeedEmployees = true
+    }
+  } catch {
+    shouldSeedEmployees = true
+  }
+
+  let parsedAdmin = null
+  try {
+    parsedAdmin = rawAdmin ? JSON.parse(rawAdmin) : null
+    if (!Array.isArray(parsedAdmin) || parsedAdmin.length === 0) {
+      shouldSeedAdmin = true
+    }
+  } catch {
+    shouldSeedAdmin = true
+  }
+
+  if (shouldSeedEmployees) {
+    localStorage.setItem('employees', JSON.stringify(employees))
+  }
+  if (shouldSeedAdmin) {
+    localStorage.setItem('admin', JSON.stringify(admin))
+  } else {
+    // Ensure default admin exists; if missing, reset to default list
+    const hasDefaultAdmin = parsedAdmin && parsedAdmin.some((a) => a && a.email === 'admin@e.com')
+    if (!hasDefaultAdmin) {
+      localStorage.setItem('admin', JSON.stringify(admin))
+    }
+  }
 }
 export const getLocalStorage = () => {
   const employees = JSON.parse(localStorage.getItem("employees"))

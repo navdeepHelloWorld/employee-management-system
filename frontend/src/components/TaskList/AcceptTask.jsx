@@ -1,21 +1,21 @@
 import React from 'react'
 
-const AcceptTask = ({data}) => {
+const AcceptTask = ({data, onComplete, onFail}) => {
  
     return (
         <div>
-            <div className='h-full flex-shrink-0 w-[300px] bg-red-400 py-5 px-5 rounded-xl '>
+            <div className='h-full flex-shrink-0 w-[300px] bg-[#1b1d22] border border-white/10 border-l-4 border-l-yellow-400 py-5 px-5 rounded-xl shadow-sm '>
                 <div className="flex justify-between items-center ">
-                    <h3 className="bg-red-500 text-sm px-3 py-1 rounded text-white " > {data.category}</h3>
-                    <h4 className="text-white text-sm">{data.date}</h4>
+                    <span className="text-xs px-2 py-1 rounded bg-yellow-500/20 text-yellow-200 border border-yellow-500/30" > {data.category}</span>
+                    <span className="text-xs text-gray-400">{data.date}</span>
                 </div>
-                <h2 className="mt-5 text-2xl font-semibold text-white ">{data.title}</h2>
-                <p className="text-sm mt-2">
+                <h2 className="mt-4 text-xl font-semibold text-white ">{data.title}</h2>
+                <p className="text-sm mt-2 text-gray-300">
                     {data.description}
                 </p>
-                <div className='flex justify-between mt-4'>
-                    <button className='bg-green-500 py-1 px-2 text-sm rounded ' >Mark as Completed</button>
-                    <button className='bg-red-500 py-1 px-2 text-sm rounded' >Mark as Failed</button>
+                <div className='flex justify-between mt-4 gap-2'>
+                    <button onClick={onComplete} className='flex-1 bg-emerald-600 hover:bg-emerald-700 py-2 text-sm rounded-md text-white transition-colors' >Mark Completed</button>
+                    <button onClick={onFail} className='flex-1 bg-red-600 hover:bg-red-700 py-2 text-sm rounded-md text-white transition-colors' >Mark Failed</button>
                 </div>
             </div>
         </div>

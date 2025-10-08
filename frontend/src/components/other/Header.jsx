@@ -6,14 +6,14 @@ const Header = (props) => {
     }
    
     return (
-        <div className="flex items-end justify-between text-white">
-            <h1 className="text-2xl">
-                Hello <br/>
-                <span className="text-3xl font-semibold">{props.data.firstName} 🫡</span>
-            </h1> 
+        <div className="flex items-center justify-between text-white">
+            <div>
+                <p className="text-sm text-gray-400">Welcome back,</p>
+                <h1 className="text-3xl font-semibold tracking-tight">{props.data.firstName} 🫡</h1>
+            </div>
             <button 
                 onClick={logOutUser} 
-                className="bg-red-500 text-lg font-medium text-white px-4 py-2 m-5 rounded-sm hover:bg-red-600 transition-colors">
+                className="bg-red-600 text-sm font-medium text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors shadow-sm">
                 Log Out
             </button>
         </div>

@@ -37,13 +37,28 @@ const App = () => {
       return
     }
 
-    // Check admin login
-    const admin = authData.admin?.find((e) => e.email === email && e.password === password)
+    // Ensure storage is seeded/repaired
+    try { setLocalStorage() } catch {}
+
+    // Check admin login (including repaired storage)
+    const currentAdmins = authData.admin ?? getLocalStorage().admin ?? []
+    const admin = currentAdmins.find((e) => e.email === email && e.password === password)
     if (admin) {
       const userData = { role: 'admin', data: admin }
       localStorage.setItem('loggedInUser', JSON.stringify(userData))
       setUser("admin")
       setLoggedInUserData(admin)
+      return
+    }
+
+    // Fallback to default admin if storage was corrupted but credentials match
+    if (email === 'admin@e.com' && password === '123') {
+      const fallbackAdmin = { id: 1, firstName: 'Navdeep', email: 'admin@e.com', password: '123' }
+      localStorage.setItem('admin', JSON.stringify([fallbackAdmin]))
+      const userData = { role: 'admin', data: fallbackAdmin }
+      localStorage.setItem('loggedInUser', JSON.stringify(userData))
+      setUser('admin')
+      setLoggedInUserData(fallbackAdmin)
       return
     }
 

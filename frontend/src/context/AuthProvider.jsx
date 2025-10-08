@@ -10,7 +10,7 @@ const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         try {
-            // Initialize localStorage with default data
+            // Initialize localStorage only if empty
             setLocalStorage()
             
             // Get data after initialization
@@ -37,8 +37,18 @@ const AuthProvider = ({ children }) => {
         return <div className="flex items-center justify-center h-screen text-red-500">Error: {error}</div>
     }
 
+    const updateEmployees = (updater) => {
+        setUserData((prev) => {
+            if (!prev) return prev
+            const nextEmployees = typeof updater === 'function' ? updater(prev.employees) : updater
+            const next = { ...prev, employees: nextEmployees }
+            localStorage.setItem('employees', JSON.stringify(nextEmployees))
+            return next
+        })
+    }
+
     return (
-        <AuthContext.Provider value={userData}>
+        <AuthContext.Provider value={{ ...userData, updateEmployees }}>
             {children}
         </AuthContext.Provider>
     )
