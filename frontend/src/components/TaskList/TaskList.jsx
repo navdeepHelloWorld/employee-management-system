@@ -4,6 +4,7 @@ import AcceptTask from "./AcceptTask";
 import NewTask from "./NewTask";
 import CompleteTask from "./CompleteTask";
 import FailedTask from "./FailedTask";
+import { updateTaskStatusApi } from "../../utils/api";
 
 const TaskList = ({ data }) => {
     const auth = useContext(AuthContext)
@@ -40,6 +41,15 @@ const TaskList = ({ data }) => {
         })
     }
 
+    const syncStatusIfId = async (task, nextStatus) => {
+        // If this task comes from API (has _id), sync to backend
+        if (task && task._id) {
+            try {
+                await updateTaskStatusApi(task._id, nextStatus)
+            } catch {}
+        }
+    }
+
     const renderTask = (task, index) => {
         // Priority order: completed > failed > active > new
         if (task.completed) {
@@ -49,21 +59,29 @@ const TaskList = ({ data }) => {
             return <FailedTask key={`${task.title}-${index}`} data={task} />
         }
         if (task.action) {
-            const onComplete = () =>
+            const onComplete = async () => {
+                await syncStatusIfId(task, 'completed')
                 updateTaskByIndex(index, (t) => ({ ...t, action: false, newTask: false, completed: true, failed: false }))
-            const onFail = () =>
+            }
+            const onFail = async () => {
+                await syncStatusIfId(task, 'failed')
                 updateTaskByIndex(index, (t) => ({ ...t, action: false, newTask: false, completed: false, failed: true }))
+            }
             return <AcceptTask key={`${task.title}-${index}`} data={task} onComplete={onComplete} onFail={onFail} />
         }
         if (task.newTask) {
-            const onAccept = () =>
+            const onAccept = async () => {
+                await syncStatusIfId(task, 'active')
                 updateTaskByIndex(index, (t) => ({ ...t, action: true, newTask: false }))
+            }
             return <NewTask key={`${task.title}-${index}`} data={task} onAccept={onAccept} />
         }
         
         // Default case - show as new task
-        const onAccept = () =>
+        const onAccept = async () => {
+            await syncStatusIfId(task, 'active')
             updateTaskByIndex(index, (t) => ({ ...t, action: true, newTask: false }))
+        }
         return <NewTask key={`${task.title}-${index}`} data={task} onAccept={onAccept} />
     }
 

@@ -1,6 +1,7 @@
 
 import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthProvider";
+import { createTaskApi } from "../../utils/api";
 
 const CreateTask = () => {
     const [taskTitle, setTaskTitle] = useState("");
@@ -43,55 +44,53 @@ const CreateTask = () => {
         setMessage({ text: "", type: "" });
         
         try {
-            // Get current employees data
-            const employeesData = JSON.parse(localStorage.getItem("employees")) || [];
-            
-            // Find the employee to assign the task to
-            const employeeIndex = employeesData.findIndex(emp => emp.firstName === assignTo);
-            
-            if (employeeIndex === -1) {
-                setMessage({ text: "Employee not found", type: "error" });
-                return;
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                // Backend path: requires assignedTo user id
+                await createTaskApi({
+                    title: taskTitle.trim(),
+                    description: taskDescription.trim(),
+                    category: category.trim(),
+                    assignedTo: assignTo.trim(),
+                    date: taskDate
+                })
+                setMessage({ text: "Task created successfully!", type: "success" });
+                resetForm();
+                setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+            } else {
+                // Demo fallback: localStorage update
+                const employeesData = JSON.parse(localStorage.getItem("employees")) || [];
+                const employeeIndex = employeesData.findIndex(emp => emp.firstName === assignTo);
+                if (employeeIndex === -1) {
+                    setMessage({ text: "Employee not found", type: "error" });
+                    return;
+                }
+                const newTask = {
+                    id: Date.now(),
+                    title: taskTitle.trim(),
+                    description: taskDescription.trim(),
+                    date: taskDate,
+                    category: category.trim(),
+                    assignTo: assignTo.trim(),
+                    action: false,
+                    newTask: true,
+                    completed: false,
+                    failed: false,
+                    createdAt: new Date().toISOString()
+                };
+                employeesData[employeeIndex].tasks.push(newTask);
+                employeesData[employeeIndex].taskStats.new += 1;
+                localStorage.setItem("employees", JSON.stringify(employeesData));
+                if (authData) {
+                    authData.employees = employeesData;
+                }
+                setMessage({ text: "Task created successfully!", type: "success" });
+                resetForm();
+                setTimeout(() => setMessage({ text: "", type: "" }), 3000);
             }
-            
-            // Create new task
-            const newTask = {
-                id: Date.now(), // Simple ID generation
-                title: taskTitle.trim(),
-                description: taskDescription.trim(),
-                date: taskDate,
-                category: category.trim(),
-                assignTo: assignTo.trim(),
-                action: false,
-                newTask: true,
-                completed: false,
-                failed: false,
-                createdAt: new Date().toISOString()
-            };
-            
-            // Add task to employee
-            employeesData[employeeIndex].tasks.push(newTask);
-            
-            // Update task stats
-            employeesData[employeeIndex].taskStats.new += 1;
-            
-            // Save back to localStorage
-            localStorage.setItem("employees", JSON.stringify(employeesData));
-            
-            // Update context
-            if (authData) {
-                authData.employees = employeesData;
-            }
-            
-            setMessage({ text: "Task created successfully!", type: "success" });
-            resetForm();
-            
-            // Clear success message after 3 seconds
-            setTimeout(() => setMessage({ text: "", type: "" }), 3000);
-            
         } catch (error) {
             console.error("Error creating task:", error);
-            setMessage({ text: "Failed to create task. Please try again.", type: "error" });
+            setMessage({ text: error.message || "Failed to create task. Please try again.", type: "error" });
         } finally {
             setIsSubmitting(false);
         }
@@ -151,12 +150,10 @@ const CreateTask = () => {
                             className="w-full text-sm py-2 px-3 outline-none bg-transparent text-white border border-gray-400 rounded focus:border-emerald-400 transition-colors"
                             disabled={isSubmitting}
                         >
-                            <option 
-                            className="bg-gray-800"
-                             value="">Select Employee</option>
+                            <option className="bg-gray-800" value="">Select Employee</option>
                             {authData.employees.map((emp) => (
-                                <option className="bg-gray-800" key={emp.id} value={emp.firstName}>
-                                    {emp.firstName}
+                                <option className="bg-gray-800" key={emp.id || emp._id} value={emp._id || emp.id}>
+                                    {emp.firstName || emp.name}
                                 </option>
                             ))}
                         </select>

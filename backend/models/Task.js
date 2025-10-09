@@ -6,7 +6,7 @@ const taskSchema = new mongoose.Schema(
     description: String,
     category: String,
     date: { type: Date, default: Date.now },
-    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User"  },
     status: {
       type: String,
       enum: ["new", "active", "completed", "failed"],

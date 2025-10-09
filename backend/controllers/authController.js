@@ -7,12 +7,14 @@ const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expires
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+    const emailNorm = (email || "").toLowerCase().trim();
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: emailNorm });
     if (userExists) return res.status(400).json({ message: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashedPassword, role });
+    const safeRole = role === "admin" ? "employee" : "employee"; // prevent client from self-assigning admin
+    const user = await User.create({ name, email: emailNorm, password: hashedPassword, role: safeRole });
 
     res.status(201).json({
       _id: user._id,
@@ -29,8 +31,9 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const emailNorm = (email || "").toLowerCase().trim();
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: emailNorm });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);

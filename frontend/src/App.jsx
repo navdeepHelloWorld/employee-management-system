@@ -4,6 +4,7 @@ import Login from './components/Auth/Login.jsx';
 import EmployeeDashboard from './components/Dashboard/EmployeeDashboard.jsx';
 import AdminDashboard from './components/Dashboard/AdminDashboard.jsx';
 import { getLocalStorage, setLocalStorage } from './utils/localStorage.jsx';
+import { loginApi } from './utils/api.js';
 import { AuthContext } from './context/AuthProvider.jsx';
 
 const App = () => {
@@ -29,18 +30,30 @@ const App = () => {
     }
   }, [])
  
-  const handleLogin = (email, password) => {
+  const handleLogin = async (email, password) => {
     setLoginError("")
     
+    // Try backend login first
+    try {
+      const resp = await loginApi(email, password)
+      if (resp?.token) {
+        localStorage.setItem('authToken', resp.token)
+        const userPayload = { role: resp.role, data: { _id: resp._id, name: resp.name, email: resp.email, role: resp.role } }
+        localStorage.setItem('loggedInUser', JSON.stringify(userPayload))
+        setUser(resp.role)
+        setLoggedInUserData(userPayload.data)
+        return
+      }
+    } catch (e) {
+      // fall through to local demo auth
+    }
+
+    // Demo fallback: local seeded auth
     if (!authData) {
       setLoginError("System is still loading, please wait...")
       return
     }
-
-    // Ensure storage is seeded/repaired
     try { setLocalStorage() } catch {}
-
-    // Check admin login (including repaired storage)
     const currentAdmins = authData.admin ?? getLocalStorage().admin ?? []
     const admin = currentAdmins.find((e) => e.email === email && e.password === password)
     if (admin) {
@@ -50,19 +63,6 @@ const App = () => {
       setLoggedInUserData(admin)
       return
     }
-
-    // Fallback to default admin if storage was corrupted but credentials match
-    if (email === 'admin@e.com' && password === '123') {
-      const fallbackAdmin = { id: 1, firstName: 'Navdeep', email: 'admin@e.com', password: '123' }
-      localStorage.setItem('admin', JSON.stringify([fallbackAdmin]))
-      const userData = { role: 'admin', data: fallbackAdmin }
-      localStorage.setItem('loggedInUser', JSON.stringify(userData))
-      setUser('admin')
-      setLoggedInUserData(fallbackAdmin)
-      return
-    }
-
-    // Check employee login
     const employee = authData.employees?.find((e) => e.email === email && e.password === password)
     if (employee) {
       const userData = { role: 'employee', data: employee }
@@ -71,8 +71,6 @@ const App = () => {
       setLoggedInUserData(employee)
       return
     }
-
-    // Invalid credentials
     setLoginError("Invalid email or password")
   }
 
